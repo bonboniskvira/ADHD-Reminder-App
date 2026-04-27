@@ -8,7 +8,7 @@ workflows:
       xcode: latest
       vars:
         PROJECT_PATH: "adhdnotes"
-        BUNDLE_ID: "com.kner.adhdnotes"
+        BUNDLE_ID: "cz.matej.adhdnotes"
     scripts:
       - name: Flutter pub get
         script: |
@@ -27,11 +27,10 @@ workflows:
           cd "$PROJECT_PATH"
           flutter analyze
           flutter test
-      - name: Build IPA
+      - name: Build iOS (no codesign)
         script: |
           cd "$PROJECT_PATH"
-          flutter build ipa --release
+          flutter build ios --release --no-codesign
     artifacts:
-      - adhdnotes/build/ios/ipa/*.ipa
-      - adhdnotes/build/ios/archive/*.xcarchive
+      - adhdnotes/build/ios/iphoneos/Runner.app
       - adhdnotes/flutter_drive.log
