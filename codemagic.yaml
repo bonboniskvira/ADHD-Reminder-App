@@ -1,0 +1,37 @@
+workflows:
+  ios-workflow:
+    name: iOS (adhdnotes)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      vars:
+        PROJECT_PATH: "adhdnotes"
+        BUNDLE_ID: "com.kner.adhdnotes"
+    scripts:
+      - name: Flutter pub get
+        script: |
+          cd "$PROJECT_PATH"
+          flutter pub get
+      - name: Create .env for build
+        script: |
+          cd "$PROJECT_PATH"
+          if [ -z "$DEEPSEEK_API_KEY" ]; then
+            echo "DEEPSEEK_API_KEY is not set in Codemagic Environment variables."
+            exit 1
+          fi
+          echo "DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY" > .env
+      - name: Analyze + tests
+        script: |
+          cd "$PROJECT_PATH"
+          flutter analyze
+          flutter test
+      - name: Build IPA
+        script: |
+          cd "$PROJECT_PATH"
+          flutter build ipa --release
+    artifacts:
+      - adhdnotes/build/ios/ipa/*.ipa
+      - adhdnotes/build/ios/archive/*.xcarchive
+      - adhdnotes/flutter_drive.log
